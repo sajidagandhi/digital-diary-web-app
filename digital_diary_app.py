@@ -10,14 +10,15 @@ app.secret_key = "ESCAPE"
 
 import os
 
+import os
+
 DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": os.getenv("DIARY_DB_PASSWORD"),
-    "database": "diary"
-
+    "host": os.getenv("MYSQLHOST", "localhost"),
+    "port": int(os.getenv("MYSQLPORT", "3306")),
+    "user": os.getenv("MYSQLUSER", "root"),
+    "password": os.getenv("MYSQLPASSWORD", os.getenv("DIARY_DB_PASSWORD")),
+    "database": os.getenv("MYSQLDATABASE", "diary")
 }
-
 def db():
     return mysql.connector.connect(
         **DB_CONFIG,
@@ -360,8 +361,7 @@ if __name__ == "__main__":
     print("Database setup complete!")
     print("Opening website at http://127.0.0.1:5000")
     app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=False,
-        use_reloader=False
-    )
+    host="0.0.0.0",
+    port=int(os.getenv("PORT", "5000")),
+    debug=False
+)
