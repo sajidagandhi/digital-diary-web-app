@@ -35,6 +35,7 @@ def db():
         **DB_CONFIG,
         use_pure=True
     )
+    
 
 def setup_database():
     print("1. Connecting to MySQL...")
@@ -54,6 +55,8 @@ def setup_database():
 
         print("3. Creating database...")
         cur.execute("CREATE DATABASE IF NOT EXISTS diary")
+        conn = db()
+        cur = conn.cursor()
 
         print("4. Database created/exists!")
 
@@ -366,13 +369,13 @@ def todo_delete(tid):
 def logout():
     session.clear(); return redirect(url_for("home"))
 
-if __name__ == "__main__":
-    print("Starting Digital Diary...")
+
+try:
     setup_database()
-    print("Database setup complete!")
-    print("Opening website at http://127.0.0.1:5000")
-    app.run(
-    host="0.0.0.0",
-    port=int(os.getenv("PORT", "5000")),
-    debug=False
-)
+except Error:
+    app.logger.exception("Database initialization failed")
+    raise
+
+if __name__ == "__main__":
+    app.run(debug=False)
+
