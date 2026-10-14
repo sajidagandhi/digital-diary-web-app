@@ -5,20 +5,31 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date, datetime, timedelta
 import calendar
 
+
 app = Flask(__name__)
 app.secret_key = "ESCAPE"
 
 import os
 
-import os
+app.secret_key = os.environ.get("SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError("SECRET_KEY environment variable is missing")
 
 DB_CONFIG = {
-    "host": os.getenv("MYSQLHOST", "localhost"),
-    "port": int(os.getenv("MYSQLPORT", "3306")),
-    "user": os.getenv("MYSQLUSER", "root"),
-    "password": os.getenv("MYSQLPASSWORD", os.getenv("DIARY_DB_PASSWORD")),
-    "database": os.getenv("MYSQLDATABASE", "diary")
+    "host": os.environ["DB_HOST"],
+    "port": int(os.environ.get("DB_PORT", "3306")),
+    "user": os.environ["DB_USER"],
+    "password": os.environ["DB_PASSWORD"],
+    "database": os.environ["DB_NAME"],
+    "ssl_ca": os.path.join(os.path.dirname(__file__), "ca.pem"),
+    "ssl_verify_cert": True,
+    "ssl_verify_identity": True,
+    "connection_timeout": 15,
 }
+
+def db():
+    return mysql.connector.connect(**DB_CONFIG)
+
 def db():
     return mysql.connector.connect(
         **DB_CONFIG,
